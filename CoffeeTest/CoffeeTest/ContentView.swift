@@ -31,7 +31,6 @@ extension HorizontalAlignment {
     
     static let highlightCenter = HorizontalAlignment(Center.self)
     static let highlightTrailing = HorizontalAlignment(Trailing.self)
-    //    static let s = HorizontalAlignment(Center.self)
 }
 
 extension VerticalAlignment {
@@ -66,7 +65,7 @@ struct StepHighlight: View {
                 .frame(width: 130, height: 130)
                 .alignmentGuide(HorizontalAlignment.highlightTrailing) {
                     return $0[HorizontalAlignment.trailing] }
-            //                        .padding(.bottom, -20)
+
             Rectangle()
                 .alignmentGuide(HorizontalAlignment.highlightCenter) { $0[HorizontalAlignment.center] }
                 .frame(width: 50, height: 50)
@@ -104,7 +103,6 @@ struct CoffeeStep: View {
                     StepHighlight()
                 }
                 Text(text)
-                //                    .alignmentGuide(HorizontalAlignment.q) { $0[HorizontalAlignment.center] }
             }
             ZStack(alignment: Alignment(horizontal: .highlightTrailing, vertical: .bottom)) {
                 
@@ -118,10 +116,17 @@ struct CoffeeStep: View {
 struct ContentView : View {
     @State var stepNumber: Int = 0
     
+    // Animations are opportunties to add animations
+    
     func nextStep() {
-        stepNumber += 1
-        if stepNumber > 3 {
-            stepNumber = 0
+        // TODO: Preview animation is snappy, what is it? It doesn't match this:
+        withAnimation(Animation.spring(mass: 2, stiffness: 100, damping: 9.0, initialVelocity: 5)) {
+        //Animation.fluidSpring(stiffness: 0.3, dampingFraction: 0.9)) { //blendDuration: T##Double, timestep: <#T##Double#>, idleThreshold: <#T##Double#>)) {
+        
+            stepNumber += 1
+            if stepNumber > 3 {
+                stepNumber = 0
+            }
         }
     }
     
@@ -131,7 +136,6 @@ struct ContentView : View {
                 Text("Next")
             }
             HStack() {
-                
                 
                 Spacer()
                 
@@ -144,8 +148,11 @@ struct ContentView : View {
                             VStack(alignment: .center, spacing: 12) {
                                 
                                 if stepNumber == 0 {
-                                    StepHighlight()
+                                    IDView(StepHighlight()
                                         .padding(.bottom, -40)
+                                        .animation(Animation.default),
+                                           id: "Highlight")
+                                    
                                 }
                                 Text("Bloom")
                                     .alignmentGuide(.step1Baseline) {
@@ -153,8 +160,10 @@ struct ContentView : View {
                                         $0[VerticalAlignment.firstTextBaseline]
                                 }
                                 if stepNumber == 1 {
-                                    StepHighlight()
+                                    IDView(StepHighlight()
                                         .padding(.bottom, -40)
+                                        .animation(Animation.default),
+                                           id: "Highlight")
                                 }
                                 Text("Pour")
                                     .alignmentGuide(.step2Baseline) {
@@ -162,8 +171,10 @@ struct ContentView : View {
                                         $0[VerticalAlignment.firstTextBaseline]
                                 }
                                 if stepNumber == 2 {
-                                    StepHighlight()
+                                    IDView(StepHighlight()
                                         .padding(.bottom, -40)
+                                        .animation(Animation.default),
+                                           id: "Highlight")
                                 }
                                 Text("Drain")
                                     .alignmentGuide(.step3Baseline) {
@@ -172,10 +183,11 @@ struct ContentView : View {
                                 }
                                 // Fix alignment issue, otherwise center alignment collapses
                                 if stepNumber == 3 {
-                                    StepHighlight()
+                                    IDView(StepHighlight()
                                         .padding(.bottom, -40)
-                                        .opacity(0)
-                                }
+                                        .animation(Animation.default)
+                                        .opacity(0),
+                                           id: "Highlight")                                }
                                 
                             }
 //                                .padding(.trailing, stepNumber == 3 ? 50 : 0)
@@ -188,33 +200,6 @@ struct ContentView : View {
                     .padding(.top, 40)
                     .padding(.trailing, 16)
                 
-                
-                
-                
-                //                VStack(alignment: .trailing) {
-                //                    ZStack(alignment: Alignment(horizontal: .trailing, vertical: .bottom)) {
-                //
-                //                        CoffeeStep(text: "Bloom", symbol: "1", isSelected:  true)
-                //
-                //
-                //                        ZStack(alignment: Alignment(horizontal: .trailing, vertical: .bottom)) {
-                //
-                //                            CoffeeStep(text: "Pour", symbol: "2", isSelected: false)
-                //
-                //                            ZStack(alignment: Alignment(horizontal: .trailing, vertical: .bottom)) {
-                //
-                //                                CoffeeStep(text: "Drain", symbol: "3")
-                //                            }
-                //                        }
-                //                    }
-                //
-                //                    Spacer()
-                //                    }
-                //                    .padding(.top, 40)
-                //                    .padding(.trailing, 16)
-                //                .background(Color.blue)
-                
-                
             }
             Spacer()
         }
@@ -224,7 +209,12 @@ struct ContentView : View {
 #if DEBUG
 struct ContentView_Previews : PreviewProvider {
     static var previews: some View {
-        ContentView()
+        Group {
+            ContentView()
+//            ContentView().colorScheme(.dark)
+        }
+        
     }
 }
+
 #endif
